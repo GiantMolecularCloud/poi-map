@@ -1,0 +1,9 @@
+{
+    "title": "POI map",
+    "database": "tests/test-data/poi.parquet",
+    "categories": {
+        "city": null,
+        "sea": null
+    },
+    "loglevel": "DEBUG"
+}
