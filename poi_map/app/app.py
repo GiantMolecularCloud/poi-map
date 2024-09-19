@@ -1,10 +1,10 @@
-import base64
-
 import dash_bootstrap_components as dbc
-from dash import html, Dash
+from dash import html, Dash, Input, Output, callback
 import dash_leaflet as dl
+import pandas as pd
 
 from ..config.models import POIMapConfig
+from ..io.database import get_data
 
 
 class POIMapApp:
@@ -14,113 +14,134 @@ class POIMapApp:
     ) -> None:
         self.config = config
 
+        self.df = get_data(config.database)
+
         self.app = Dash(
             __name__,
             title=self.config.title,
             external_stylesheets=[dbc.themes.DARKLY],
             assets_folder="../assets",
         )
+        self._init_callbacks()
 
-        # the style arguments for the sidebar. We use position:fixed and a fixed width
-        self.SIDEBAR_STYLE = {
-            "position": "fixed",
-            "top": 0,
-            "left": 0,
-            "bottom": 0,
-            "width": "24rem",
-            "padding": "1rem",
-        }
+    def _init_callbacks(self) -> None:
+        self.app.callback(
+            Output(component_id="map", component_property="children"),
+            Input(component_id="category-filter", component_property="value"),
+        )(self._update_markers)
 
-        # the styles for the main content position it to the right of the sidebar and
-        # add some padding.
-        self.CONTENT_STYLE = {
-            "margin-left": "24rem",
-        }
+    def _build_category_filter(self) -> html.Div:
+        return html.Div(
+            [
+                dbc.Checklist(
+                    options=self.config.categories,
+                    value=self.config.categories,
+                    id="category-filter",
+                    switch=True,
+                ),
+            ]
+        )
 
-    def _get_button(self, category: str) -> html.Button:
-        with open(self.config.assets / f"{category}.svg", "r") as f:
-            im = f.read()
-        im = im.replace('fill="#000000"', 'fill="#FFFFFF"')
-        encoded = base64.b64encode(str.encode(im))
-        svg = f"data:image/svg+xml;base64,{encoded.decode()}"
-
-        return html.Button(
-            id=category,
-            children=[
-                html.Div(
-                    [
-                        html.ObjectEl(
-                            data=svg,
-                            width=20,
-                            height=20,
-                            className="button-icon filter-on",
-                        ),
-                        html.P(category.capitalize(), className="button-text"),
-                    ],
+    def _get_markers(self, df: pd.DataFrame) -> dl.FeatureGroup:
+        return dl.FeatureGroup(
+            [
+                dl.Marker(
+                    position=[row.latitude, row.longitude],
+                    children=[dl.Tooltip(content=", ".join(row.category))],
                 )
-            ],
-            className="filter-button",
+                for _, row in df.iterrows()
+            ]
+        )
+
+    def _update_markers(self, input_value):
+        selected = self.df[
+            self.df.category.apply(
+                lambda category: any(x in category for x in input_value)
+            )
+        ]
+        markers = self._get_markers(selected)
+        return self._build_map(markers)
+
+    def _get_statistics(self) -> dbc.Table:
+        return dbc.Table.from_dataframe(
+            pd.DataFrame(self.df.category.explode().value_counts()).reset_index(),
+            striped=True,
+            bordered=False,
+            hover=True,
         )
 
     def _build_sidebar(self) -> None:
         self.sidebar = html.Div(
             [
                 html.H1(self.config.title),
+                html.Div(
+                    [
+                        html.Hr(),
+                        html.H3("Categories"),
+                        self._build_category_filter(),
+                    ]
+                ),
+                html.Div(
+                    [
+                        html.Hr(),
+                        html.H3("Add new POI"),
+                        html.P("Buttons and stuff to add a new POI."),
+                    ]
+                ),
                 html.Hr(),
-                html.H3("Categories"),
-                html.P("Select categories to show on the map."),
-                self._get_button("city"),
-                html.Br(),
-                self._get_button("sea"),
-                html.Hr(),
-                html.H3("Add new POI"),
-                html.P("Buttons and stuff to add a new POI."),
-                html.Hr(),
+                html.Div(
+                    [
+                        html.Hr(),
+                        html.H3("Statistics"),
+                        self._get_statistics(),
+                    ],
+                    className="bottom",
+                ),
             ],
-            style=self.SIDEBAR_STYLE,
+            className="sidebar",
         )
 
-    def _build_content(
-        self,
-        markers: dl.FeatureGroup,
-    ) -> None:
+    def _build_map_controls(self) -> dl.FeatureGroup:
+        edit_control = dl.EditControl(
+            draw=dict(
+                marker=True,
+                circle=False,
+                circlemarker=False,
+                polyline=False,
+                polygon=False,
+                rectangle=False,
+            )
+        )
+        locate_control = dl.LocateControl(locateOptions={"enableHighAccuracy": True})
+        scale_control = dl.ScaleControl(position="bottomleft")
+
+        return dl.FeatureGroup([edit_control, locate_control, scale_control])
+
+    def _build_map(self, markers) -> None:
+        return [
+            dl.TileLayer(),
+            markers,
+            self._build_map_controls(),
+        ]
+
+    def _build_content(self) -> None:
         self.content = html.Div(
             [
                 dl.Map(
                     center=[56, 10],
                     zoom=6,
                     style={"height": "100vh"},
-                    children=[
-                        dl.TileLayer(),
-                        markers,
-                        dl.FeatureGroup(
-                            [
-                                dl.EditControl(
-                                    draw=dict(
-                                        marker=True,
-                                        circle=False,
-                                        circlemarker=False,
-                                        polyline=False,
-                                        polygon=False,
-                                        rectangle=False,
-                                    )
-                                ),
-                                dl.LocateControl(
-                                    locateOptions={"enableHighAccuracy": True}
-                                ),
-                                dl.ScaleControl(position="bottomleft"),
-                            ],
-                        ),
-                    ],
+                    children=self._build_map(self._get_markers(self.df)),
+                    id="map",
                 ),
             ],
-            id="page-content",
-            style=self.CONTENT_STYLE,
+            id="main",
+            className="main",
         )
 
-    def build(self, markers: dl.FeatureGroup) -> None:
+    def build(self) -> None:
         self._build_sidebar()
-        self._build_content(markers)
+        self._build_content()
         self.app.layout = html.Div([self.sidebar, self.content])
 
     def run(self) -> None:
@@ -130,5 +151,4 @@ class POIMapApp:
 # ToDo: add callback to "add marker" button: open modal with form for POI details
 # ToDo: convert df to geopandas df and use GeoJSON to display markers
 # ToDo: add further information to markers (e.g. description)
-# ToDo: add category filter
-# ToDo: refactor and move dash app to separate module
+# ToDo: refactor

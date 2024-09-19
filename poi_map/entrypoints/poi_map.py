@@ -4,7 +4,6 @@ import pprint
 import sys
 
 from .parser import parse_config
-from ..io.database import get_data, get_markers
 from ..app.app import POIMapApp
 
 log = logging.getLogger(__name__)
@@ -24,13 +23,9 @@ def main(argv: Sequence[str] | None = None) -> None:
         log.info(line)
     log.info("-" * 50)
 
-    # Prepare data
-    df = get_data(config.database)
-    markers = get_markers(df)
-
     # Run app
     poi_app = POIMapApp(config)
-    poi_app.build(markers)
+    poi_app.build()
     poi_app.run()
 
     sys.exit(0)
