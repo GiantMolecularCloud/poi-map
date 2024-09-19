@@ -1,0 +1,31 @@
+.filter-button {
+    width: 100%;
+    border: 2px solid white;
+    border-radius: 5px;
+    margin: 0.5rem 0rem;
+    background-color: transparent;
+}
+
+
+.button-icon {
+    display: inline;
+}
+
+.filter-on {
+    fill: black;
+}
+
+.filter-off {
+    fill: #838383;
+}
+
+.button-text {
+  display: inline;
+  color: white;
+  margin: 0 0 0 0.5rem;
+  /* position: absolute;
+  top: 50%;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%); */
+}
