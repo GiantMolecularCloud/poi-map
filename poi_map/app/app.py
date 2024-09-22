@@ -47,7 +47,11 @@ class POIMapApp:
             [
                 dl.Marker(
                     position=[row.latitude, row.longitude],
-                    children=[dl.Tooltip(content=", ".join(row.category))],
+                    children=[
+                        dl.Tooltip(
+                            content=f"<b>{row.title}</b><br><i>{', '.join(row.category)}</i><br>{row.description}",
+                        )
+                    ],
                 )
                 for _, row in df.iterrows()
             ]
