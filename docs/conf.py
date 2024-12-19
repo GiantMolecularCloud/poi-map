@@ -6,14 +6,14 @@ import datetime
 
 today = datetime.date.today()
 
-sys.path.insert(0, os.path.abspath("../src"))
+sys.path.insert(0, os.path.abspath("../poi_map"))
 
 project = "poi-map"
 author = "giantmolecularcloud"
 copyright = f"{today.year} {author}"
 
 # Configure the
-html_theme_options = {"body_max_width": "80%", "page_width": "90%"}
+html_theme_options = {"body_max_width": "80%"}
 html_theme = "sphinx_rtd_theme"
 
 extensions = [

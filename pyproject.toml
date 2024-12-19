@@ -6,7 +6,7 @@ authors = ["giantmolecularcloud"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "^3.12"
 pandas = "^2.2.2"
 pydantic = "^2.9.1"
 dash = "^2.18.0"
@@ -14,6 +14,7 @@ plotly = "^5.24.0"
 dash-leaflet = "^1.0.15"
 dash-bootstrap-components = "^1.6.0"
 pyarrow = "^17.0.0"
+pandera = "^0.21.1"
 
 [tool.poetry.group.dev.dependencies]
 pydantic-settings = "2.2.1"
@@ -117,12 +118,12 @@ warn_untyped_fields = true
 init_typed = true
 
 [tool.poe.tasks]
-test = {cmd = "pytest --cov=src/man_adt --cov-config=pyproject.toml", help = "Run test suite"}
-lint = {cmd = "flake8 --max-cognitive-complexity=15 src", help = "Lint and complexity score for source code"}
-black = {cmd = "black -l 120 src tests", help = "Format source code"}
-isort = {cmd = "isort src", help = "Sort imports"}
+test = {cmd = "pytest --cov=poi_map --cov-config=pyproject.toml", help = "Run test suite"}
+lint = {cmd = "flake8 --max-cognitive-complexity=15 poi_map", help = "Lint and complexity score for source code"}
+black = {cmd = "black -l 120 poi_map tests", help = "Format source code"}
+isort = {cmd = "isort poi_map", help = "Sort imports"}
 format = {sequence = ["isort", "black"], help = "Format source code & sort imports"}
-mypy = {cmd = "mypy src", help = "Type check code"}
+mypy = {cmd = "mypy poi_map", help = "Type check code"}
 docs = {sequence = [
     { cmd = "pip-licenses --summary --from=classifier --with-system --format=rst --output-file docs/sources/_generated/licenses_summary.rst" },
     { cmd = "pip-licenses --format=rst --output-file docs/sources/_generated/licenses.rst" },
