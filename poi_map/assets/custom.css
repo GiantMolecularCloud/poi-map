@@ -15,7 +15,6 @@
     position: fixed;
     bottom: 0;
     left: 0;
-    /* width: 100%-2rem; */
     width: 22rem;
     margin: 1rem;
 }
@@ -23,3 +22,45 @@
 .table > thead {
     display: none
 }
+
+.main-button {
+    position: fixed;
+    top: 10px;
+    left: 4rem;
+    z-index: 1000;
+}
+
+.user-response {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
+}
+
+/* input box */
+.Select-control {
+    background-color: black;
+}
+
+
+/* changes the text color of input box */
+.Select-value-label {
+    color: white !important;
+}
+
+.Select--single > .Select-control .Select-value, .Select-placeholder {
+    border: 1px solid grey;
+    border-radius: 4px;
+}
+
+/* dropdown menu options */
+.VirtualizedSelectOption {
+    background-color: black;
+    color: white;
+ }
+
+ .marker-tooltip {
+    max-width: 25rem;
+    white-space: normal;
+    width: max-content;
+ }

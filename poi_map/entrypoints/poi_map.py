@@ -1,10 +1,10 @@
 import logging
-from typing import Sequence
 import pprint
 import sys
+from typing import Sequence
 
-from .parser import parse_config
 from ..app.app import POIMapApp
+from .parser import parse_config
 
 log = logging.getLogger(__name__)
 
@@ -29,3 +29,7 @@ def main(argv: Sequence[str] | None = None) -> None:
     poi_app.run()
 
     sys.exit(0)
+
+
+if __name__ == "__main__":
+    main()
