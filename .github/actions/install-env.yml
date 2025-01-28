@@ -1,9 +1,9 @@
 name: Install Python env
+description: 'Installs the Python environment with  Poetry. This composite action is used for the unit test and code quality actions.'
 
 runs:
   using: "composite"
   steps:
-
     - name: Check out repository
       uses: actions/checkout@v3
 
