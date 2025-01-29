@@ -1,0 +1,6 @@
+{
+    "title": "Heidelberg",
+    "database": "tests/test-data/local_execution/poi.parquet",
+    "categories": ["landmark", "university", "transportation", "nature"],
+    "zoomlevel": 14
+}

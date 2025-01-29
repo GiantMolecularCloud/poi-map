@@ -1,0 +1,6 @@
+{
+    "title": "Heidelberg",
+    "database": "config/poi.parquet",
+    "categories": ["landmark", "university", "transportation", "nature"],
+    "zoomlevel": 14
+}

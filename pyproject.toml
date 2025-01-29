@@ -14,7 +14,7 @@ plotly = "^5.24.0"
 dash-leaflet = "^1.0.15"
 dash-bootstrap-components = "^1.6.0"
 pyarrow = "^17.0.0"
-pandera = "^0.21.1"
+pandera = "^0.22.1"
 
 [tool.poetry.group.dev.dependencies]
 pydantic-settings = "2.2.1"

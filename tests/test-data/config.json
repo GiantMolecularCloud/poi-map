@@ -1,8 +1,0 @@
-{
-    "title": "Heidelberg",
-    "database": "tests/test-data/poi.parquet",
-    "assets": "tests/test-data/assets",
-    "categories": ["landmark", "university", "transportation", "nature"],
-    "zoomlevel": 14,
-    "loglevel": "DEBUG"
-}
