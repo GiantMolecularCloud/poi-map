@@ -1,4 +1,6 @@
-[![Build image and push to Docker Hub](https://github.com/GiantMolecularCloud/poi-map/actions/workflows/build-image.yml/badge.svg)](https://github.com/GiantMolecularCloud/poi-map/actions/workflows/build-image.yml)
+[![Code Quality](https://github.com/GiantMolecularCloud/poi-map/actions/workflows/code-quality.yml/badge.svg)](https://github.com/GiantMolecularCloud/poi-map/actions/workflows/code-quality.yml)
+[![Tests](https://github.com/GiantMolecularCloud/poi-map/actions/workflows/unit-tests.yml/badge.svg)](https://github.com/GiantMolecularCloud/poi-map/actions/workflows/unit-tests.yml)
+[![Image on Docker Hub](https://github.com/GiantMolecularCloud/poi-map/actions/workflows/build-image.yml/badge.svg)](https://github.com/GiantMolecularCloud/poi-map/actions/workflows/build-image.yml)
 
 # POI map
 
@@ -27,8 +29,8 @@ Functionality:
 ### docker
 
 -   Build the image: `docker build -t poi-map:latest -f docker/Dockerfile .`
--   Customize the config file in `tests/test-data/config.json` and save it as `config.json`.
--   Run the container: ` docker run -v /path/to/your/config/directory:/config poi-map:latest poi-map`
+-   Customize the config file in `tests/test-data/docker/config.json` and save it as `config.json`.
+-   Run the container: `docker run -v /path/to/your/config/directory:/config poi-map:latest poi-map`
 
 Built docker images are also available on [Docker Hub](https://hub.docker.com/r/giantmolecularcloud/poi-map).
 
@@ -83,7 +85,7 @@ During the development process, the code should be linted and type checked. This
 - For linting: `poetry run poe lint`
 - For type checking: `poetry run poe mypy`
 - For testing: `poetry run poe test`
-(- To build the documentation: `poetry run poe docs`. Meaningful ocumentation is not yet included but is TBD.)
+- To build the documentation: `poetry run poe docs` (Meaningful ocumentation is not yet included but is TBD.)
 
 Each of these steps should be performed prior to creating a pull request. They can be executed all-at-once by executing
 ```shell
