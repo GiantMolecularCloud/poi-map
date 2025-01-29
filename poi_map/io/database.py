@@ -1,3 +1,4 @@
+from datetime import date
 from pathlib import Path
 
 import numpy as np
@@ -34,7 +35,7 @@ class POIData(pa.DataFrameModel):
     category: Series = pa.Field(
         title="Category", description="One or more categories that the POI falls into."
     )
-    date: Series[str] = pa.Field(title="Date", description="Date of the POI.")
+    date: Series[date] = pa.Field(title="Date", description="Date of the POI.")
     title: Series[str] = pa.Field(title="Title", description="Title of the POI.")
     description: Series[str] = pa.Field(
         title="Description", description="Description of the POI."

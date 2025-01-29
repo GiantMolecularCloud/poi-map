@@ -158,21 +158,6 @@ class POIMapApp:
 
         :return: FeatureGroup of map controls.
         """
-        # edit_control = dl.EditControl(
-        #     id="edit_control",
-        #     draw=dict(
-        #         marker=True,
-        #         circle=False,
-        #         circlemarker=False,
-        #         polyline=False,
-        #         polygon=False,
-        #         rectangle=False,
-        #     ),
-        #     edit=dict(
-        #         edit=False,
-        #         remove=True,
-        #     ),
-        # )
         locate_control = dl.LocateControl(locateOptions={"enableHighAccuracy": True})
         scale_control = dl.ScaleControl(position="bottomleft")
 
@@ -711,4 +696,8 @@ class POIMapApp:
 
         Before the app can run, it must be built using the `build` method.
         """
-        self.app.run(debug=self.config.loglevel == "DEBUG")
+        self.app.run(
+            host="0.0.0.0",
+            port=str(self.config.port),
+            debug=self.config.loglevel == "DEBUG",
+        )
