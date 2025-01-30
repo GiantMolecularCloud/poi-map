@@ -11,12 +11,13 @@ sys.path.insert(0, os.path.abspath("../poi_map"))
 project = "poi-map"
 author = "giantmolecularcloud"
 copyright = f"{today.year} {author}"
+release = "1.1.0"
 
-# Configure the
 html_theme_options = {"body_max_width": "80%"}
 html_theme = "sphinx_rtd_theme"
 
 extensions = [
+    "sphinx.ext.githubpages",
     "sphinx.ext.autodoc",
     "sphinx_autodoc_typehints",
     "sphinx.ext.coverage",
