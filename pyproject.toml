@@ -124,10 +124,6 @@ format = {sequence = ["isort", "black"], help = "Format source code & sort impor
 lint = {cmd = "flake8 --max-cognitive-complexity=15 poi_map", help = "Lint and complexity score for source code"}
 mypy = {cmd = "mypy poi_map", help = "Type check code"}
 test = {cmd = "pytest --cov=poi_map --cov-config=pyproject.toml", help = "Run test suite"}
-docs = {sequence = [
-    { cmd = "pip-licenses --summary --from=classifier --with-system --format=rst --output-file docs/sources/_generated/licenses_summary.rst" },
-    { cmd = "pip-licenses --format=rst --output-file docs/sources/_generated/licenses.rst" },
-    { cmd = "sphinx-build docs docs/_build" },
-], help = "Build documentation"}
+docs = {cmd = "sphinx-build docs docs/_build", help = "Build documentation"}
 precommit = {sequence = ["format", "lint", "mypy", "test", "docs"], help = "Prepare for commit"}
 make-tag = { shell = "git tag -a `poetry version -s` -m v`poetry version -s`", help = "Create git tag for current version" }
