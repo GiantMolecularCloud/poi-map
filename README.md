@@ -1,6 +1,7 @@
 [![Code Quality](https://github.com/GiantMolecularCloud/poi-map/actions/workflows/code-quality.yaml/badge.svg)](https://github.com/GiantMolecularCloud/poi-map/actions/workflows/code-quality.yaml)
 [![Tests](https://github.com/GiantMolecularCloud/poi-map/actions/workflows/unit-tests.yaml/badge.svg)](https://github.com/GiantMolecularCloud/poi-map/actions/workflows/unit-tests.yaml)
 [![Image on Docker Hub](https://github.com/GiantMolecularCloud/poi-map/actions/workflows/build-image.yml/badge.svg)](https://github.com/GiantMolecularCloud/poi-map/actions/workflows/build-image.yml)
+[![Documentation](https://github.com/GiantMolecularCloud/poi-map/actions/workflows/build-docs.yaml/badge.svg)](https://github.com/GiantMolecularCloud/poi-map/actions/workflows/build-docs.yaml)
 
 # POI map
 
