@@ -1,0 +1,74 @@
+database
+========
+
+.. py:module:: database
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   database.POIData
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   database.get_data
+   database.initialize_schema
+
+
+Module Contents
+---------------
+
+.. py:function:: get_data(file: pathlib.Path) -> pandas.DataFrame
+
+.. py:function:: initialize_schema(model: pandera.DataFrameModel) -> pandas.DataFrame
+
+.. py:class:: POIData
+
+   Bases: :py:obj:`pandera.DataFrameModel`
+
+
+   Model of a pandas :class:`~pandera.api.pandas.container.DataFrameSchema`.
+
+   *new in 0.5.0*
+
+   See the :ref:`User Guide <dataframe-models>` for more.
+
+
+   .. py:attribute:: latitude
+      :type:  pandera.typing.Series[float]
+
+
+   .. py:attribute:: longitude
+      :type:  pandera.typing.Series[float]
+
+
+   .. py:attribute:: category
+      :type:  pandera.typing.Series
+
+
+   .. py:attribute:: date
+      :type:  pandera.typing.Series[POIData.date]
+
+
+   .. py:attribute:: title
+      :type:  pandera.typing.Series[str]
+
+
+   .. py:attribute:: description
+      :type:  pandera.typing.Series[str]
+
+
+   .. py:method:: category_must_be_list(series: pandera.typing.Series) -> pandera.typing.Series[bool]
+      :classmethod:
+
+
+      Ensure that the category column is a list of strings.
+
+
+

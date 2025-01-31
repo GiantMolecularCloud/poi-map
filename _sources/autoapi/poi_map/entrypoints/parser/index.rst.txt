@@ -1,0 +1,34 @@
+poi_map.entrypoints.parser
+==========================
+
+.. py:module:: poi_map.entrypoints.parser
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   poi_map.entrypoints.parser.parse_config
+   poi_map.entrypoints.parser.make_parser
+
+
+Module Contents
+---------------
+
+.. py:function:: parse_config(argv: Sequence[str] | None = None) -> poi_map.config.models.POIMapConfig
+
+   Parse the JSON config into the config model.
+
+   :param description: CLI Description.
+   :param argv: Optional sequence of arguments to the argument parser.
+   :return: The config model.
+
+
+.. py:function:: make_parser() -> argparse.ArgumentParser
+
+   Function to create ArgumentParser.
+
+   :return: ArgumentParser
+
+
