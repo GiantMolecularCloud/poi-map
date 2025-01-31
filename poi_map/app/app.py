@@ -1,5 +1,5 @@
 import logging
-from datetime import date
+from datetime import date, datetime
 from typing import Any, Iterable
 
 import dash_bootstrap_components as dbc
@@ -423,7 +423,7 @@ class POIMapApp:
             click_data: dict,
             title: str,
             category: str,
-            date: date,
+            date: str,
             description: str,
             is_open_toast: bool,
             is_open_success: bool,
@@ -435,7 +435,7 @@ class POIMapApp:
             bool,
             str | None,
             str | None,
-            date,
+            str,
             str | None,
             int,
             list,
@@ -462,7 +462,7 @@ class POIMapApp:
                         "latitude": [lat],
                         "longitude": [lon],
                         "category": [np.array(category)],
-                        "date": [date],
+                        "date": [datetime.strptime(date, "%Y-%m-%d").date()],
                         "title": [title],
                         "description": [description],
                     }
