@@ -16,7 +16,7 @@ Functionality
 
 - create, delete, update POIs
 - display POIs on an interactive map
-- filter POIs by categories
+- filter POIs by category and date
 - get some basic POI statistics
 
 
