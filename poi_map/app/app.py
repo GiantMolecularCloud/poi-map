@@ -57,18 +57,12 @@ class POIMapApp:
             :param end_date: End date of the date range.
             :return: Map with Tile Layer, markers and controls.
             """
-            selected = self.df[
-                self.df.category.apply(
-                    lambda category: any(x in category for x in filtered_categories)
-                )
-            ]
+            selected = self.df[self.df.category.apply(lambda category: any(x in category for x in filtered_categories))]
 
             if start_date is not None and end_date is not None:
                 start_date_ = date.fromisoformat(start_date)
                 end_date_ = date.fromisoformat(end_date)
-                selected = selected[
-                    (selected.date >= start_date_) & (selected.date <= end_date_)
-                ]
+                selected = selected[(selected.date >= start_date_) & (selected.date <= end_date_)]
 
             markers = self.get_markers(selected)
             return self.build_map(markers)
@@ -241,15 +235,9 @@ class POIMapApp:
                     id="user-response",
                     children=[
                         self.get_new_poi_modal(),
-                        self.get_toast(
-                            message="Click on the map to add a POI.", id="add-poi-toast"
-                        ),
-                        self.get_success_message(
-                            message="POI added successfully.", id="new-poi-success"
-                        ),
-                        self.get_success_message(
-                            message="POI removed successfully.", id="remove-poi-success"
-                        ),
+                        self.get_toast(message="Click on the map to add a POI.", id="add-poi-toast"),
+                        self.get_success_message(message="POI added successfully.", id="new-poi-success"),
+                        self.get_success_message(message="POI removed successfully.", id="remove-poi-success"),
                         self.get_remove_poi_modal(),
                     ],
                     className="main user-response",
@@ -422,9 +410,7 @@ class POIMapApp:
         Attach a callback to open the "new POI" modal.
         """
 
-        def open_modal(
-            click_data: dict, is_open_modal: bool, is_open_toast: bool
-        ) -> tuple[str, bool, bool]:
+        def open_modal(click_data: dict, is_open_modal: bool, is_open_toast: bool) -> tuple[str, bool, bool]:
             if is_open_toast and not is_open_modal:
                 coordinates = click_data["latlng"]
                 lat, lon = coordinates.values()
@@ -457,19 +443,7 @@ class POIMapApp:
             description: str,
             is_open_toast: bool,
             is_open_success: bool,
-        ) -> tuple[
-            bool,
-            bool,
-            str,
-            bool,
-            bool,
-            str | None,
-            str | None,
-            str,
-            str | None,
-            int,
-            list,
-        ]:
+        ) -> tuple[bool, bool, str, bool, bool, str | None, str | None, str, str | None, int, list,]:
             if not is_open_toast:
                 return (
                     False,

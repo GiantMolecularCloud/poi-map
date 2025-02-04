@@ -23,6 +23,7 @@ repos:
         args:
             - run
             - black
+            - -l 120
         language: system
         types: [ python ]
         require_serial: true
