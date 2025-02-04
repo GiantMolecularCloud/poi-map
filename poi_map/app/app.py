@@ -44,11 +44,17 @@ class POIMapApp:
         - filter_markers: Filter markers based on selected categories.
         """
 
-        def filter_markers(filtered_categories: Iterable) -> list:
+        def filter_markers(
+            filtered_categories: Iterable,
+            start_date: str,
+            end_date: str,
+        ) -> list:
             """
-            Filter markers based on selected categories.
+            Filter markers based on selected categories and date range.
 
             :param filtered_categories: List of selected categories.
+            :param start_date: Start date of the date range.
+            :param end_date: End date of the date range.
             :return: Map with Tile Layer, markers and controls.
             """
             selected = self.df[
@@ -56,12 +62,22 @@ class POIMapApp:
                     lambda category: any(x in category for x in filtered_categories)
                 )
             ]
+
+            if start_date is not None and end_date is not None:
+                start_date_ = date.fromisoformat(start_date)
+                end_date_ = date.fromisoformat(end_date)
+                selected = selected[
+                    (selected.date >= start_date_) & (selected.date <= end_date_)
+                ]
+
             markers = self.get_markers(selected)
             return self.build_map(markers)
 
         self.app.callback(
             Output(component_id="map", component_property="children"),
             Input(component_id="category-filter", component_property="value"),
+            Input(component_id="date-filter", component_property="start_date"),
+            Input(component_id="date-filter", component_property="end_date"),
         )(filter_markers)
 
     def get_markers(self, df: pd.DataFrame) -> dl.FeatureGroup:
@@ -118,15 +134,29 @@ class POIMapApp:
         self.sidebar = html.Div(
             [
                 html.H1(self.config.title),
+                html.Hr(),
                 html.Div(
                     [
+                        html.Div(
+                            [
+                                html.H3("Categories"),
+                                dbc.Checklist(
+                                    options=self.config.categories,
+                                    value=self.config.categories,
+                                    id="category-filter",
+                                    switch=True,
+                                ),
+                            ]
+                        ),
                         html.Hr(),
-                        html.H3("Categories"),
-                        dbc.Checklist(
-                            options=self.config.categories,
-                            value=self.config.categories,
-                            id="category-filter",
-                            switch=True,
+                        html.Div(
+                            [
+                                html.H3("Date Range"),
+                                dcc.DatePickerRange(
+                                    id="date-filter",
+                                    initial_visible_month=date.today(),
+                                ),
+                            ]
                         ),
                     ]
                 ),
