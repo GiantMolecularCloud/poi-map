@@ -21,9 +21,7 @@ def parse_config(argv: Sequence[str] | None = None) -> POIMapConfig:
         with open(args.config, "r") as f:
             config = json.load(f)
     else:
-        raise ValueError(
-            f"File type {args.config.suffix} is not supported. Config file has to be JSON."
-        )
+        raise ValueError(f"File type {args.config.suffix} is not supported. Config file has to be JSON.")
 
     return POIMapConfig(**config)
 
@@ -34,9 +32,7 @@ def make_parser() -> argparse.ArgumentParser:
 
     :return: ArgumentParser
     """
-    parser = argparse.ArgumentParser(
-        description="A quick and dirty track labeling app."
-    )
+    parser = argparse.ArgumentParser(description="A quick and dirty track labeling app.")
 
     parser.add_argument(
         "config",

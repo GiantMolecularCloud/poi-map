@@ -14,7 +14,7 @@ I needed a simple tool for POIs but did not want to use Google Maps and create a
 Functionality:
 - create, delete, update POIs
 - display POIs on an interactive map
-- filter POIs by categories
+- filter POIs by category or date
 - get some basic POI statistics
 
 ## Running the app
@@ -95,8 +95,8 @@ $ poetry run poe precommit
 
 ## To Do
 
-- More tests that actually test something rather than just a smoke test.
-- Use gunicorn or uWSGI instead of Flask's default werkzeug for better performance/security (although this is not actually needed for such a small and simple project).
-- Custom markers for each category that replace the default marker.
-- Populate the documentation and deploy it to a GitHub pages page.
-- Add filter for date additionally to category.
+- [ ] More tests that actually test something rather than just a smoke test.
+- [ ] Use gunicorn or uWSGI instead of Flask's default werkzeug for better performance/security (although this is not actually needed for such a small and simple project).
+- [ ] Custom markers for each category that replace the default marker.
+- [x] Populate the documentation and deploy it to a GitHub pages page.
+- [x] Add filter for date additionally to category.

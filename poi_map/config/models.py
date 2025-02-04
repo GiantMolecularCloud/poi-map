@@ -14,9 +14,7 @@ class POIMapConfig(BaseModel):
     categories: list[str] = Field(..., description="List of POI categories to use.")
     zoomlevel: int = Field(5, description="Initial zoom level.")
     port: int = Field(8080, description="Port to run the app on.")
-    loglevel: LogLevel = Field(
-        "INFO", description="Level at which messages should be logged."
-    )
+    loglevel: LogLevel = Field("INFO", description="Level at which messages should be logged.")
 
     @field_validator("database")
     @classmethod

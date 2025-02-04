@@ -11,7 +11,7 @@ sys.path.insert(0, os.path.abspath("../poi_map"))
 project = "poi-map"
 author = "giantmolecularcloud"
 copyright = f"{today.year} {author}"
-release = "1.1.2"
+release = "1.2.0"
 
 html_theme_options = {"body_max_width": "80%"}
 html_theme = "sphinx_rtd_theme"
