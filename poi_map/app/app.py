@@ -231,6 +231,7 @@ class POIMapApp:
                     id="map",
                 ),
                 html.Div(id="out"),
+                dcc.Store(id="clicked-coordinates", data=None),
                 html.Div(
                     id="user-response",
                     children=[
@@ -410,10 +411,21 @@ class POIMapApp:
         Attach a callback to open the "new POI" modal.
         """
 
-        def open_modal(click_data: dict, is_open_modal: bool, is_open_toast: bool) -> tuple[str, bool, bool]:
-            if is_open_toast and not is_open_modal:
-                coordinates = click_data["latlng"]
-                lat, lon = coordinates.values()
+        def store_coordinates(click_data: dict) -> dict | None:
+            if click_data:
+                return click_data["latlng"]
+            return None
+
+        self.app.callback(
+            Output("clicked-coordinates", "data"),
+            Input("map", "clickData"),
+            prevent_initial_call=True,
+        )(store_coordinates)
+
+        def open_modal(coordinates: dict, is_open_modal: bool, is_open_toast: bool) -> tuple[str, bool, bool]:
+            if coordinates and is_open_toast and not is_open_modal:
+                print(coordinates)
+                lat, lon = coordinates["lat"], coordinates["lng"]
                 self._log.debug(f"user clicked coordinates: {coordinates}")
                 return f"({lat:.3f}, {lon:.3f})", True, False
             else:
@@ -423,7 +435,7 @@ class POIMapApp:
             Output("add-poi-location", "children"),
             Output("add-poi-modal", "is_open", allow_duplicate=True),
             Output("add-poi-toast", "is_open"),
-            Input("map", "clickData"),
+            Input("clicked-coordinates", "data"),
             [State("add-poi-modal", "is_open"), State("add-poi-toast", "is_open")],
             prevent_initial_call=True,
         )(open_modal)
@@ -436,14 +448,14 @@ class POIMapApp:
         def create_poi(
             n_clicks: int,
             map_children: list,
-            click_data: dict,
+            coordinates: dict,
             title: str,
             category: str,
             date: str,
             description: str,
             is_open_toast: bool,
             is_open_success: bool,
-        ) -> tuple[bool, bool, str, bool, bool, str | None, str | None, str, str | None, int, list,]:
+        ) -> tuple[bool, bool, str, bool, bool, str | None, str | None, str, str | None, int, list]:
             if not is_open_toast:
                 return (
                     False,
@@ -458,9 +470,8 @@ class POIMapApp:
                     0,
                     map_children,
                 )
-            elif is_open_toast and n_clicks > 0:
-                coordinates = click_data["latlng"]
-                lat, lon = coordinates.values()
+            elif is_open_toast and n_clicks > 0 and coordinates:
+                lat, lon = coordinates["lat"], coordinates["lon"]
                 new_poi = pd.DataFrame(
                     {
                         "latitude": [lat],
@@ -522,7 +533,7 @@ class POIMapApp:
             [
                 Input("add-poi-modal-create", "n_clicks"),
                 Input("map", "children"),
-                Input("map", "clickData"),
+                Input("clicked-coordinates", "data"),
                 Input("add-poi-title", "value"),
                 Input("add-poi-category", "value"),
                 Input("add-poi-date", "date"),
