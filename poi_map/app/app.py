@@ -7,6 +7,7 @@ import dash_leaflet as dl
 import numpy as np
 import pandas as pd
 from dash import Dash, Input, Output, State, dcc, html
+from pydantic import ValidationError
 
 from ..config.models import POIMapConfig
 from ..io.database import POIData, get_data
@@ -64,8 +65,7 @@ class POIMapApp:
                 end_date_ = date.fromisoformat(end_date)
                 selected = selected[(selected.date >= start_date_) & (selected.date <= end_date_)]
 
-            markers = self.get_markers(selected)
-            return self.build_map(markers)
+            return self.build_map()
 
         self.app.callback(
             Output(component_id="map", component_property="children"),
@@ -74,39 +74,23 @@ class POIMapApp:
             Input(component_id="date-filter", component_property="end_date"),
         )(filter_markers)
 
-    def get_markers(self, df: pd.DataFrame) -> dl.FeatureGroup:
+    def get_markers(self, df: pd.DataFrame) -> list[dict]:
         """
-        Get a FeatureGroup of markers based on the DataFrame.
+        Get a list of serialized marker data based on the DataFrame.
 
         :param df: DataFrame with POI data.
-        :return: FeatureGroup of markers.
+        :return: List of serialized marker data.
         """
-        return dl.FeatureGroup(
-            [
-                dl.Marker(
-                    position=[row.latitude, row.longitude],
-                    children=[
-                        dl.Tooltip(
-                            children=[
-                                html.Div(
-                                    [
-                                        html.B(row.title),
-                                        html.Br(),
-                                        html.Span(row.date),
-                                        html.Br(),
-                                        html.I(", ".join(row.category)),
-                                        html.Br(),
-                                        html.Span(row.description),
-                                    ],
-                                    className="marker-tooltip",
-                                )
-                            ]
-                        )
-                    ],
-                )
-                for _, row in df.iterrows()
-            ]
-        )
+        return [
+            {
+                "position": [row.latitude, row.longitude],
+                "title": row.title,
+                "date": row.date.isoformat(),
+                "category": row.category,
+                "description": row.description,
+            }
+            for _, row in df.iterrows()
+        ]
 
     def get_statistics(self) -> dbc.Table:
         """
@@ -187,16 +171,17 @@ class POIMapApp:
 
         return dl.FeatureGroup([locate_control, scale_control])
 
-    def build_map(self, markers: dl.FeatureGroup) -> list:
+    def build_map(self) -> list:
         """
         Build a map with markers and controls.
 
-        :param markers: FeatureGroup of markers.
         :return: List of map components.
         """
         return [
             dl.TileLayer(),
-            markers,
+            dl.FeatureGroup(
+                id="map-markers", children=[self.format_marker(marker) for marker in self.get_markers(self.df)]
+            ),
             self.build_map_controls(),
         ]
 
@@ -227,7 +212,7 @@ class POIMapApp:
                     center=[self.df.latitude.median(), self.df.longitude.median()],
                     zoom=self.config.zoomlevel,
                     style={"height": "100vh"},
-                    children=self.build_map(self.get_markers(self.df)),
+                    children=self.build_map(),
                     id="map",
                 ),
                 html.Div(id="out"),
@@ -388,6 +373,7 @@ class POIMapApp:
         self._attach_show_toast_callback()
         self._attach_open_new_modal_callback()
         self._attach_create_poi_callback()
+        self._attach_update_markers_callback()
 
     def _attach_show_toast_callback(self) -> None:
         """
@@ -410,12 +396,11 @@ class POIMapApp:
         Attach a callback to open the "new POI" modal.
         """
 
-        def open_modal(click_data: dict, is_open_modal: bool, is_open_toast: bool) -> tuple[str, bool, bool]:
-            if is_open_toast and not is_open_modal:
-                coordinates = click_data["latlng"]
-                lat, lon = coordinates.values()
+        def open_modal(coordinates: dict, is_open_modal: bool, is_open_toast: bool) -> tuple[str, bool, bool]:
+            if coordinates and is_open_toast and not is_open_modal:
+                lat, lng = coordinates["latlng"]["lat"], coordinates["latlng"]["lng"]
                 self._log.debug(f"user clicked coordinates: {coordinates}")
-                return f"({lat:.3f}, {lon:.3f})", True, False
+                return f"({lat:.3f}, {lng:.3f})", True, False
             else:
                 return "(NaN, NaN)", False, False
 
@@ -428,6 +413,20 @@ class POIMapApp:
             prevent_initial_call=True,
         )(open_modal)
 
+    def _validate_poi(self, poi: pd.DataFrame) -> pd.DataFrame:
+        """
+        Validate a POI.
+
+        :param poi: POI to be validated.
+        :return: Validated POI.
+        """
+        try:
+            return POIData.validate(poi)
+        except ValidationError as e:
+            self._log.error(f"Validation error for new POI: {e}")
+            self._log.error(poi)
+            self._log.error(f"Traceback: {e}")
+
     def _attach_create_poi_callback(self) -> None:
         """
         Attach a callback to create a new POI.
@@ -435,15 +434,14 @@ class POIMapApp:
 
         def create_poi(
             n_clicks: int,
-            map_children: list,
-            click_data: dict,
+            coordinates: dict,
             title: str,
             category: str,
             date: str,
             description: str,
             is_open_toast: bool,
             is_open_success: bool,
-        ) -> tuple[bool, bool, str, bool, bool, str | None, str | None, str, str | None, int, list,]:
+        ) -> tuple[bool, bool, str, bool, bool, str | None, str | None, str, str | None, int]:
             if not is_open_toast:
                 return (
                     False,
@@ -456,29 +454,27 @@ class POIMapApp:
                     date,
                     None,
                     0,
-                    map_children,
                 )
-            elif is_open_toast and n_clicks > 0:
-                coordinates = click_data["latlng"]
-                lat, lon = coordinates.values()
+            elif is_open_toast and n_clicks > 0 and coordinates:
+                lat, lng = coordinates["latlng"]["lat"], coordinates["latlng"]["lng"]
                 new_poi = pd.DataFrame(
                     {
                         "latitude": [lat],
-                        "longitude": [lon],
+                        "longitude": [lng],
                         "category": [np.array(category)],
                         "date": [datetime.strptime(date, "%Y-%m-%d").date()],
                         "title": [title],
                         "description": [description],
                     }
                 )
-                new_poi = POIData.validate(new_poi)
+                new_poi = self._validate_poi(new_poi)
                 self.df = pd.concat([self.df, new_poi]).reset_index(drop=True)
-                self._log.info(f'Added POI "{new_poi}"')
+                self._log.info("Added POI:")
+                self._log.info(new_poi)
 
                 self.df.to_parquet(self.config.database)
                 self._log.info("Persisted database.")
 
-                map_children[1] = self.get_markers(self.df)
                 return (
                     False,
                     True,
@@ -490,7 +486,6 @@ class POIMapApp:
                     date,
                     None,
                     n_clicks,
-                    map_children,
                 )
             else:
                 return (
@@ -504,7 +499,6 @@ class POIMapApp:
                     date,
                     description,
                     0,
-                    map_children,
                 )
 
         self.app.callback(
@@ -518,10 +512,8 @@ class POIMapApp:
             Output("add-poi-date", "date"),
             Output("add-poi-description", "value"),
             Output("add-poi-modal-create", "n_clicks"),
-            Output("map", "children", allow_duplicate=True),
             [
                 Input("add-poi-modal-create", "n_clicks"),
-                Input("map", "children"),
                 Input("map", "clickData"),
                 Input("add-poi-title", "value"),
                 Input("add-poi-category", "value"),
@@ -639,31 +631,23 @@ class POIMapApp:
         def remove_poi(
             value: str,
             n_clicks: int,
-            map_children: list,
             is_open_modal: bool,
             is_open_success: bool,
-        ) -> tuple[bool, int, bool, str | None, str | None, list]:
+        ) -> tuple[bool, int, bool, str | None, str | None]:
             if not is_open_modal:
-                return False, 0, False, None, None, map_children
+                return False, 0, False, None, None
             elif value is not None and is_open_modal and n_clicks > 0:
                 selected = self.df.iloc[int(value)]
                 self.df = self.df.drop(int(value)).reset_index(drop=True)
-                self._log.info(f'Removed POI "{selected}"')
+                self._log.info("Removed POI:")
+                self._log.info(selected)
 
                 self.df.to_parquet(self.config.database)
                 self._log.info("Persisted database.")
 
-                map_children[1] = self.get_markers(self.df)
-                return (
-                    False,
-                    0,
-                    True,
-                    f'Removed POI "{selected.title}"',
-                    None,
-                    map_children,
-                )
+                return (False, 0, True, f'Removed POI "{selected.title}"', None)
             else:
-                return True, 0, False, None, value, map_children
+                return True, 0, False, None, value
 
         self.app.callback(
             Output("remove-poi-modal", "is_open", allow_duplicate=True),
@@ -671,11 +655,9 @@ class POIMapApp:
             Output("remove-poi-success", "is_open", allow_duplicate=True),
             Output("remove-poi-success", "children"),
             Output("remove-poi-dropdown", "value"),
-            Output("map", "children", allow_duplicate=True),
             [
                 Input("remove-poi-dropdown", "value"),
                 Input("remove-poi-modal-remove", "n_clicks"),
-                Input("map", "children"),
             ],
             [
                 State("remove-poi-modal", "is_open"),
@@ -683,6 +665,53 @@ class POIMapApp:
             ],
             prevent_initial_call=True,
         )(remove_poi)
+
+    def _attach_update_markers_callback(self) -> None:
+        """
+        Attach a callback to update the markers on the map.
+        """
+
+        def update_markers(df: pd.DataFrame) -> dl.FeatureGroup:
+            """
+            Generate updated markers based on the current DataFrame.
+
+            :param df: The updated DataFrame.
+            :return: A list of updated map components.
+            """
+            self._log.debug(f"Updating markers with {len(df)} entries.")
+            return dl.FeatureGroup([self.format_marker(marker) for marker in self.get_markers(df)])
+
+        self.app.callback(
+            Output("map-markers", "children"),
+            [
+                Input("add-poi-modal-create", "n_clicks"),
+                Input("remove-poi-modal-remove", "n_clicks"),
+            ],
+            prevent_initial_call=True,
+        )(lambda _create_clicks, _remove_clicks: update_markers(self.df))
+
+    def format_marker(self, marker: dict) -> dl.Marker:
+        return dl.Marker(
+            position=marker["position"],
+            children=[
+                dl.Tooltip(
+                    children=[
+                        html.Div(
+                            [
+                                html.B(marker["title"]),
+                                html.Br(),
+                                html.Span(marker["date"]),
+                                html.Br(),
+                                html.I(", ".join(marker["category"])),
+                                html.Br(),
+                                html.Span(marker["description"]),
+                            ],
+                            className="marker-tooltip",
+                        )
+                    ]
+                )
+            ],
+        )
 
     def build(self) -> None:
         """
