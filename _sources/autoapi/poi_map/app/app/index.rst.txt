@@ -1,0 +1,229 @@
+poi_map.app.app
+===============
+
+.. py:module:: poi_map.app.app
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   poi_map.app.app.POIMapApp
+
+
+Module Contents
+---------------
+
+.. py:class:: POIMapApp(config: poi_map.config.models.POIMapConfig)
+
+   .. py:attribute:: _log
+
+
+   .. py:attribute:: config
+
+
+   .. py:attribute:: df
+
+
+   .. py:attribute:: app
+
+
+   .. py:method:: init_callbacks() -> None
+
+      Attach inital callbacks to the app.
+
+      The following callbacks are attached:
+      - filter_markers: Filter markers based on selected categories.
+
+
+
+   .. py:method:: get_markers(df: pandas.DataFrame) -> list[dict]
+
+      Get a list of serialized marker data based on the DataFrame.
+
+      :param df: DataFrame with POI data.
+      :return: List of serialized marker data.
+
+
+
+   .. py:method:: get_statistics() -> dash_bootstrap_components.Table
+
+      Get statistics of the POI data.
+
+      :return: Table with statistics.
+
+
+
+   .. py:method:: build_sidebar() -> None
+
+      Build the sidebar of the app.
+
+
+
+   .. py:method:: build_map_controls() -> dash_leaflet.FeatureGroup
+
+      Build a FeatureGroup of map controls.
+
+      Enabled controls:
+      - LocateControl: Locate the user (Brwoser asks for confirmation).
+      - ScaleControl: Display a scale on the map.
+
+      Disabled controls:
+      - EditControl: Add, edit and remove markers.
+
+      :return: FeatureGroup of map controls.
+
+
+
+   .. py:method:: build_map() -> list
+
+      Build a map with markers and controls.
+
+      :return: List of map components.
+
+
+
+   .. py:method:: build_main() -> None
+
+      Build the main part of the app (the map window).
+
+
+
+   .. py:method:: get_toast(message: str, id: str) -> dash_bootstrap_components.Alert
+
+      Get a preconfigured Alert primary message.
+
+      :param message: Message displayed in the alert.
+      :param id: ID of the alert.
+      :return: Alert.
+
+
+
+   .. py:method:: get_success_message(message: str, id: str) -> dash_bootstrap_components.Alert
+
+      Get a preconfigured Alert success message.
+
+      :param message: Message displayed in the alert.
+      :param id: ID of the alert.
+      :return: Alert.
+
+
+
+   .. py:method:: _get_new_poi_modal_input_row(label: str, children: Any) -> dash_bootstrap_components.Row
+
+      Get a row with a label and children to be displayed in the "new POI" modal.
+
+      :param label: Label to be displayed.
+      :param children: Children to be displayed.
+      :return: Row.
+
+
+
+   .. py:method:: get_new_poi_modal() -> dash_bootstrap_components.Modal
+
+      Get a modal to add a new POI.
+
+      The modal contains the following fields:
+      - Location: Display the coordinates of the clicked location.
+      - Title: Input field for the title of the POI.
+      - Category: Dropdown to select the category of the POI.
+      - Date: Date picker to select the date of the POI.
+      - Description: Input field for the description of the POI.
+
+      Additionally, a header and footer with a button to create the POI is included.
+
+      :return: Modal.
+
+
+
+   .. py:method:: attach_new_poi_callbacks() -> None
+
+      Attach callbacks that handle creating a new POI.
+
+
+
+   .. py:method:: _attach_show_toast_callback() -> None
+
+      Attach a callback to show a toast message for the user to click on the map.
+
+
+
+   .. py:method:: _attach_open_new_modal_callback() -> None
+
+      Attach a callback to open the "new POI" modal.
+
+
+
+   .. py:method:: _validate_poi(poi: pandas.DataFrame) -> pandas.DataFrame
+
+      Validate a POI.
+
+      :param poi: POI to be validated.
+      :return: Validated POI.
+
+
+
+   .. py:method:: _attach_create_poi_callback() -> None
+
+      Attach a callback to create a new POI.
+
+
+
+   .. py:method:: get_remove_poi_modal() -> dash_bootstrap_components.Modal
+
+      Get a modal to remove a POI.
+
+      :return: Modal.
+
+
+
+   .. py:method:: attach_remove_poi_callbacks() -> None
+
+      Attach callbacks that handle removing a POI.
+
+
+
+   .. py:method:: _attach_open_remove_modal_callback() -> None
+
+      Attach a callback to open the "remove POI" modal.
+
+
+
+   .. py:method:: _attach_update_remove_poi_callback() -> None
+
+      Attach a callback to update the "remove POI" modal contents.
+
+
+
+   .. py:method:: _attach_remove_poi_callback() -> None
+
+      Attach a callback to remove a POI.
+
+
+
+   .. py:method:: _attach_update_markers_callback() -> None
+
+      Attach a callback to update the markers on the map.
+
+
+
+   .. py:method:: format_marker(marker: dict) -> dash_leaflet.Marker
+
+
+   .. py:method:: build() -> None
+
+      Build the app:
+      - Build the sidebar.
+      - Build the main part.
+
+
+
+   .. py:method:: run() -> None
+
+      Run the app.
+
+      Before the app can run, it must be built using the `build` method.
+
+
+
