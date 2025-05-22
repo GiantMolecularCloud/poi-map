@@ -19,7 +19,7 @@ pandera = "^0.22.1"
 [tool.poetry.group.dev.dependencies]
 pydantic-settings = "2.2.1"
 autodoc_pydantic = ">=1.8,<3"
-black = "^23"
+black = "^24"
 coverage = {extras = ["toml"], version = "^7"}
 darglint = "^1.5.8"
 flake8 = "^6"
