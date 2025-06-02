@@ -1,0 +1,16 @@
+poi_map.entrypoints
+===================
+
+.. py:module:: poi_map.entrypoints
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/poi_map/entrypoints/parser/index
+   /autoapi/poi_map/entrypoints/poi_map/index
+
+
