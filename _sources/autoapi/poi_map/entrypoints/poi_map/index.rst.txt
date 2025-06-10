@@ -1,0 +1,29 @@
+poi_map.entrypoints.poi_map
+===========================
+
+.. py:module:: poi_map.entrypoints.poi_map
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   poi_map.entrypoints.poi_map.log
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   poi_map.entrypoints.poi_map.main
+
+
+Module Contents
+---------------
+
+.. py:data:: log
+
+.. py:function:: main(argv: Sequence[str] | None = None) -> None
+
