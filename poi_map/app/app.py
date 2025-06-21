@@ -65,7 +65,7 @@ class POIMapApp:
                 end_date_ = date.fromisoformat(end_date)
                 selected = selected[(selected.date >= start_date_) & (selected.date <= end_date_)]
 
-            return self.build_map()
+            return self.build_map(selected)
 
         self.app.callback(
             Output(component_id="map", component_property="children"),
@@ -173,17 +173,16 @@ class POIMapApp:
 
         return dl.FeatureGroup([locate_control, scale_control])
 
-    def build_map(self) -> list:
+    def build_map(self, df: pd.DataFrame) -> list:
         """
         Build a map with markers and controls.
 
+        :param df: DataFrame with POI data.
         :return: List of map components.
         """
         return [
             dl.TileLayer(),
-            dl.FeatureGroup(
-                id="map-markers", children=[self.format_marker(marker) for marker in self.get_markers(self.df)]
-            ),
+            dl.FeatureGroup(id="map-markers", children=[self.format_marker(marker) for marker in self.get_markers(df)]),
             self.build_map_controls(),
         ]
 
@@ -214,7 +213,7 @@ class POIMapApp:
                     center=[self.df.latitude.median(), self.df.longitude.median()],
                     zoom=self.config.zoomlevel,
                     style={"height": "100vh"},
-                    children=self.build_map(),
+                    children=self.build_map(self.df),
                     id="map",
                 ),
                 html.Div(id="out"),
