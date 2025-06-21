@@ -12,6 +12,11 @@ jobs:
     docker:
         runs-on: ubuntu-latest
         steps:
+            - name: Extract version
+              id: get_version
+              run: |
+                  VERSION=$(grep '^version =' pyproject.toml | head -1 | sed -E "s/version = \"([^\"]+)\"/\1/")
+                  echo "version=$VERSION" >> $GITHUB_OUTPUT
             - name: Set up QEMU
               uses: docker/setup-qemu-action@v3
             - name: Set up Docker Buildx
@@ -27,4 +32,6 @@ jobs:
                   file: docker/Dockerfile
                   platforms: linux/amd64
                   push: true
-                  tags: giantmolecularcloud/poi-map:latest
+                  tags: |
+                      giantmolecularcloud/poi-map:latest
+                      giantmolecularcloud/poi-map:${{ steps.get_version.outputs.version }}
