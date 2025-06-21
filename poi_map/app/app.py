@@ -65,7 +65,7 @@ class POIMapApp:
                 end_date_ = date.fromisoformat(end_date)
                 selected = selected[(selected.date >= start_date_) & (selected.date <= end_date_)]
 
-            return self.build_map()
+            return self.build_map(selected)
 
         self.app.callback(
             Output(component_id="map", component_property="children"),
@@ -145,6 +145,7 @@ class POIMapApp:
                         html.H3("Statistics"),
                         self.get_statistics(),
                     ],
+                    id="statistics-table",
                     className="bottom",
                 ),
             ],
@@ -152,6 +153,7 @@ class POIMapApp:
         )
         self.attach_new_poi_callbacks()
         self.attach_remove_poi_callbacks()
+        self.attach_update_statistics_callback()
 
     def build_map_controls(self) -> dl.FeatureGroup:
         """
@@ -171,17 +173,16 @@ class POIMapApp:
 
         return dl.FeatureGroup([locate_control, scale_control])
 
-    def build_map(self) -> list:
+    def build_map(self, df: pd.DataFrame) -> list:
         """
         Build a map with markers and controls.
 
+        :param df: DataFrame with POI data.
         :return: List of map components.
         """
         return [
             dl.TileLayer(),
-            dl.FeatureGroup(
-                id="map-markers", children=[self.format_marker(marker) for marker in self.get_markers(self.df)]
-            ),
+            dl.FeatureGroup(id="map-markers", children=[self.format_marker(marker) for marker in self.get_markers(df)]),
             self.build_map_controls(),
         ]
 
@@ -212,7 +213,7 @@ class POIMapApp:
                     center=[self.df.latitude.median(), self.df.longitude.median()],
                     zoom=self.config.zoomlevel,
                     style={"height": "100vh"},
-                    children=self.build_map(),
+                    children=self.build_map(self.df),
                     id="map",
                 ),
                 html.Div(id="out"),
@@ -231,6 +232,28 @@ class POIMapApp:
             id="main",
             className="main",
         )
+
+    def attach_update_statistics_callback(self) -> None:
+        """
+        Attach a callback to update the statistics table.
+        """
+
+        def update_statistics() -> dbc.Table:
+            """
+            Update the statistics table with the current DataFrame.
+
+            :return: Updated statistics table.
+            """
+            return [html.Hr(), html.H3("Statistics"), self.get_statistics()]
+
+        self.app.callback(
+            Output("statistics-table", "children"),
+            [
+                Input("add-poi-modal-create", "n_clicks"),
+                Input("remove-poi-modal-remove", "n_clicks"),
+            ],
+            prevent_initial_call=True,
+        )(lambda _create_clicks, _remove_clicks: update_statistics())
 
     def get_toast(
         self,
