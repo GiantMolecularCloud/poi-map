@@ -145,6 +145,7 @@ class POIMapApp:
                         html.H3("Statistics"),
                         self.get_statistics(),
                     ],
+                    id="statistics-table",
                     className="bottom",
                 ),
             ],
@@ -152,6 +153,7 @@ class POIMapApp:
         )
         self.attach_new_poi_callbacks()
         self.attach_remove_poi_callbacks()
+        self.attach_update_statistics_callback()
 
     def build_map_controls(self) -> dl.FeatureGroup:
         """
@@ -231,6 +233,28 @@ class POIMapApp:
             id="main",
             className="main",
         )
+
+    def attach_update_statistics_callback(self) -> None:
+        """
+        Attach a callback to update the statistics table.
+        """
+
+        def update_statistics() -> dbc.Table:
+            """
+            Update the statistics table with the current DataFrame.
+
+            :return: Updated statistics table.
+            """
+            return [html.Hr(), html.H3("Statistics"), self.get_statistics()]
+
+        self.app.callback(
+            Output("statistics-table", "children"),
+            [
+                Input("add-poi-modal-create", "n_clicks"),
+                Input("remove-poi-modal-remove", "n_clicks"),
+            ],
+            prevent_initial_call=True,
+        )(lambda _create_clicks, _remove_clicks: update_statistics())
 
     def get_toast(
         self,
