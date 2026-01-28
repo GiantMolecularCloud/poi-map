@@ -94,7 +94,7 @@ line_length = 120
 [tool.mypy]
 files = "poi_map"
 allow_redefinition = false
-plugins = ["numpy.typing.mypy_plugin", "pydantic.mypy"]
+plugins = ["pydantic.mypy"]
 
 [[tool.mypy.overrides]]
 module = "pandas.*"

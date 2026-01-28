@@ -132,7 +132,7 @@ class POIMapApp:
                                 html.H3("Date Range"),
                                 dcc.DatePickerRange(
                                     id="date-filter",
-                                    initial_visible_month=date.today(),
+                                    initial_visible_month=str(date.today()),
                                 ),
                             ]
                         ),
@@ -359,8 +359,8 @@ class POIMapApp:
                             "Date",
                             dcc.DatePickerSingle(
                                 id="add-poi-date",
-                                initial_visible_month=date.today(),
-                                date=date.today(),
+                                initial_visible_month=str(date.today()),
+                                date=str(date.today()),
                                 first_day_of_week=2,
                             ),
                         ),
