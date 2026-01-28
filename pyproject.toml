@@ -7,17 +7,17 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.12"
-pandas = "^2.2.2"
+pandas = "^3.0.0"
 pydantic = "^2.9.1"
-dash = "^2.18.0"
+dash = "^3.4.0"
 plotly = "^6.1.1"
 dash-leaflet = "^1.0.15"
 dash-bootstrap-components = "^1.6.0"
 pyarrow = "^17.0.0"
-pandera = "^0.22.1"
+pandera = "^0.28.1"
 
 [tool.poetry.group.dev.dependencies]
-pydantic-settings = "2.10.0"
+pydantic-settings = "2.12.0"
 autodoc_pydantic = ">=1.8,<3"
 black = "^25"
 coverage = {extras = ["toml"], version = "^7"}
@@ -41,7 +41,7 @@ pep8-naming = "^0.15.1"
 pip-licenses = "^4"
 poethepoet = "^0.35"
 pre-commit = "^3"
-pytest = {version = "^7.1.1"}
+pytest = {version = "^9"}
 pytest-cov = "^4.0.0"
 pytest-mock = "^3.5.0"
 pytest-rerunfailures = "^16"
@@ -55,7 +55,7 @@ sphinx-rtd-theme = "^3.0.0"
 twine = "^6.2.0"
 wcwidth = "^0.2.13"
 python-dotenv = "^1.0.1"
-ipython = "^8.27.0"
+ipython = "^9"
 
 [tool.poetry.scripts]
 poi-map = "poi_map.entrypoints.poi_map:main"
