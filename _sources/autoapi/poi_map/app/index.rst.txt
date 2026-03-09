@@ -1,0 +1,15 @@
+poi_map.app
+===========
+
+.. py:module:: poi_map.app
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/poi_map/app/app/index
+
+
